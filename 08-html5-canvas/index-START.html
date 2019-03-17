@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HTML5 Canvas</title>
+  </head>
+  <body>
+    <canvas id="draw" width="800" height="800"></canvas>
+    <script>
+      //Grab the drawing canvas HTML element
+      const canvas = document.querySelector("#draw");
+      const ctx = canvas.getContext("2d");
+
+      //Set the width of the canvas to window size
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      //Drawing style shape
+      ctx.strokeStyle = "#BADASS";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.lineWidth = 100;
+      ctx.globalCompositeOperation = "mutiply";
+
+      //To draw a line starting coordinates
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+      //HSL color gradient intilization
+      let hue = 0;
+
+      //Build up line size over time
+      let direction = true;
+
+      //Track mouse movement/action event listeners
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mousedown", e => {
+        isDrawing = true;
+        //Makes you start at a different position vs 0
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      });
+      canvas.addEventListener("mouseup", () => (isDrawing = false));
+      canvas.addEventListener("mouseout", () => (isDrawing = false));
+
+      function draw(e) {
+        //stop user from drawing when the mouse input is not pressed down
+        if (!isDrawing) return;
+        console.log(e);
+
+        //Mapping drawing input and output
+
+        //Begin the HSL color gradient
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        //Increment on HSL gradient
+        hue++;
+
+        //Reset the hue after 360
+        if (hue >= 360) {
+          hue = 0;
+        }
+
+        //Logic to flip the width build up direction
+        if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+          direction = ~direction;
+        }
+
+        //If direction is true then line width will increase, else false, it will decrease
+        if (direction) {
+          ctx.lineWidth++; // 0- 100
+        } else {
+          ctx.lineWidth--; //100 - 1
+        }
+
+        //To set drawing endpoint at the last mouse event versus 0
+        // lastX = e.offsetX;
+        // lastY = e.off;
+        //Destructure an array ES6
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+      }
+    </script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+    </style>
+  </body>
+</html>
